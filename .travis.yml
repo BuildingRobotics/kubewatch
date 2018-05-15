@@ -1,15 +1,28 @@
-language: go
-
+env:
+  global:
+    - DOCKER_REPO=comfy/kubewatch
+    # DOCKER_USER
+    - secure: "ZmVdDuTGWSDX6rt+PlZhacnPYvbnSe2C5FB3b+nNNJE1D2EngS0+5cM+KEbBrP6OwO8ypeDWWU1fowouhQCT/Y9xoMUFgjB4hWwxr7XC5meVrjAbLZSeZ73Ppakc3hhwFlTT/3US25YWOtIrBjNdogIMUb2Uncphbr0BpdfJuJezcFaBRIiggYyHVVKEQBh2gkWUohByBoD6Mj7v6cM+t1ByUUJQo2VEXEoVewwF/XnTpPE0jYXJ57kfu+NmWaGFo0xcIiAQZ7540lxDsgItKSid0S9oNGiPGwBfZIOEbWS0+LBqxrKkts8RXhM9bgIyKzUdRW89tmUaNKksYxAKOUl4eXUfhTzG/abofwB5Uy98jUUG4J5LZm83AnN3fl2eicUeVQaPR5RN+fkyvWaC5dbLsml7/tfRTk6Y2uIZZWY5pD+Mf6nYWIqD4fSieggHRCpsBuPV37dFkF1QfmdypV0iBc3snTTKegfgh+jfGnb8AVphqrXnKmIoX7JdxrWE9LEAjU+qnhgeMgkVHddBp5gTkMd5ZPvjYquxwr+mk1YRgVBtIv03jWD+Clh9FHzF4/69Rh9mVMBzGTesWYz4fMjF6vwrw6ncIruyNvm6+JSt+i8hfb2vjNpYOsOkukPRY4irJxnHkrI66vr1X8q27yHPu4JKGJKVayAeFFtaelI="
+    # DOCKER_PASS
+    - secure: "KIg4ohtVacmyIMJTuSoQ0aYkaCL5UzQSO1ilecjalkpeeYGhGxKNNFtPviYMuNM6Tdv4l3lowwXOaxiS7mSJsWpOCkX0uPJZ04eKyQcl03j39DRGH7k6kn92A2BvorpmyIU5+8zHE8kLXRvrOj6K9IjB1HZk7rH/GeP05TirgAxmX1olqsgS2vG6W5MJQFeyR6SA/gfK2xt3obgKmLQSkFlmK9qIrMRSJOxrdrEbrvNlYEbttKDmKgU56RhSSgOkhelXM9Fsgbrj6Be+auMeORnTLW0jW1o4kasAaf5W7/pmoOQ6Gog3wYcot56zCmvtoTrkNdmD3wCfk4+033N1KBKMK2L9S+ND+XAl2n1lHT6gHsXgCTvG5Zkryco5E7HC/XMjY5vCCfYuagMbXPDvgAWbnt67hLloIQrQLbrw1l4CoEN4cyc73QYviyqqQrC6xre6qa+Nexvqn+2dne4XnEIS+dCXOSU8rFyl3lGzefXfUdi9dPICjZ+IgdbNWT1VZEEkoBNfilgS/BwMQ4CbYx5herhB0QdvqIkQoVLZw6c4iNGkY9HHeSZyZVDJb9sY5lhfvcFa7WGOixq78TGpaTBiX2TE7tYZmfSDYQ2LK9/CYXokchDbSSdAs2gO6k2w1bgy0hFcY4bmJYCk6Yzet6HyPsbeWb7sqtqswUXm0iw="
 sudo: required
-
-go:
-  - 1.8
-  - tip
-
-branches:
-  only:
-    - master
-
-install:
-  - go get -u github.com/golang/dep/cmd/dep
-  - dep ensure
+services:
+  - docker
+# Upgrade Docker
+addons:
+  apt:
+    packages:
+      - docker-ce
+before_script:
+  # Log in to Docker Hub
+  - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+script:
+  # Get tags for the image
+  - TAGS=$(sh get-docker-tags.sh $DOCKER_REPO 1.0.$TRAVIS_BUILD_NUMBER)
+  # Build and tag the image
+  - docker build -f Dockerfile -t current $TAGS .
+after_success:
+  # Show built images
+  - docker images
+  # If we tagged this image, push it to Docker Hub
+  - test ! -z "$TAGS" && docker push $DOCKER_REPO
