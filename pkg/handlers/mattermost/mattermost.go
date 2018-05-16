@@ -165,3 +165,7 @@ func postMessage(url string, mattermostMessage *MattermostMessage) error {
 
 	return nil
 }
+
+func (m *Mattermost) ShutDown() {
+
+}

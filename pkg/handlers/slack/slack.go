@@ -129,3 +129,9 @@ func prepareSlackAttachment(e event.Event) slack.Attachment {
 
 	return attachment
 }
+
+func (s *Slack) ShutDown() {
+	api := slack.New(s.Token)
+	params := slack.PostMessageParameters{}
+	api.PostMessage(s.Channel, "kubewatch shutting down", params)
+}

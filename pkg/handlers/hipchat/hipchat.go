@@ -141,3 +141,7 @@ func prepareHipchatNotification(e event.Event) hipchat.NotificationRequest {
 
 	return notification
 }
+
+func (s *Hipchat) ShutDown() {
+
+}

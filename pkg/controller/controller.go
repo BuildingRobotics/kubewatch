@@ -292,6 +292,8 @@ func Start(conf *config.Config, eventHandler handlers.Handler) {
 		go c.Run(stopCh)
 	}
 
+	defer notifyOnClose(eventHandler)
+
 	sigterm := make(chan os.Signal, 1)
 	signal.Notify(sigterm, syscall.SIGTERM)
 	signal.Notify(sigterm, syscall.SIGINT)
@@ -445,4 +447,9 @@ func (c *Controller) processItem(newEvent Event) error {
 		return nil
 	}
 	return nil
+}
+
+func notifyOnClose(eventHandler handlers.Handler) {
+	eventHandler.ShutDown()
+	logrus.Info("kubewatch shutting down")
 }

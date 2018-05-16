@@ -151,3 +151,7 @@ func postMessage(url string, flockMessage *FlockMessage) error {
 
 	return nil
 }
+
+func (f *Flock) ShutDown() {
+
+}

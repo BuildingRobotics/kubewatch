@@ -126,3 +126,7 @@ func postMessage(url string, webhookMessage *WebhookMessage) error {
 
 	return nil
 }
+
+func (m *Webhook) ShutDown() {
+
+}
