@@ -8,6 +8,7 @@ import (
 	batch_v1 "k8s.io/api/batch/v1"
 	api_v1 "k8s.io/api/core/v1"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	ext_v1beta1 "k8s.io/api/extensions/v1beta1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -55,6 +56,8 @@ func GetObjectMetaData(obj interface{}) meta_v1.ObjectMeta {
 
 	switch object := obj.(type) {
 	case *apps_v1.Deployment:
+		objectMeta = object.ObjectMeta
+	case *ext_v1beta1.Deployment:
 		objectMeta = object.ObjectMeta
 	case *api_v1.ReplicationController:
 		objectMeta = object.ObjectMeta

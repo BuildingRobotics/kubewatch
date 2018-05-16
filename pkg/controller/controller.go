@@ -29,7 +29,6 @@ import (
 	"github.com/bitnami-labs/kubewatch/pkg/handlers"
 	"github.com/bitnami-labs/kubewatch/pkg/utils"
 
-	apps_v1beta1 "k8s.io/api/apps/v1beta1"
 	batch_v1 "k8s.io/api/batch/v1"
 	api_v1 "k8s.io/api/core/v1"
 	ext_v1beta1 "k8s.io/api/extensions/v1beta1"
@@ -165,13 +164,13 @@ func Start(conf *config.Config, eventHandler handlers.Handler) {
 		informer := cache.NewSharedIndexInformer(
 			&cache.ListWatch{
 				ListFunc: func(options meta_v1.ListOptions) (runtime.Object, error) {
-					return kubeClient.AppsV1beta1().Deployments(meta_v1.NamespaceAll).List(options)
+					return kubeClient.ExtensionsV1beta1().Deployments(meta_v1.NamespaceAll).List(options)
 				},
 				WatchFunc: func(options meta_v1.ListOptions) (watch.Interface, error) {
-					return kubeClient.AppsV1beta1().Deployments(meta_v1.NamespaceAll).Watch(options)
+					return kubeClient.ExtensionsV1beta1().Deployments(meta_v1.NamespaceAll).Watch(options)
 				},
 			},
-			&apps_v1beta1.Deployment{},
+			&ext_v1beta1.Deployment{},
 			0, //Skip resync
 			cache.Indexers{},
 		)
